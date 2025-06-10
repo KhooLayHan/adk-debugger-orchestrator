@@ -1,11 +1,10 @@
 {
-    // Or "ruff" if you prefer ruff's formatter
-    "python.formatting.provider": "black",
     "editor.formatOnSave": true,
     "[python]": {
-        // "ms-python.ruff" if using ruff as formatter
-        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.defaultFormatter": "ms-python.black-formatter"
     },
-
-    "ruff.lint.config": ["--config", "pyproject.toml"] // Explicitly tell Ruff to use your pyproject.toml
+    // "ruff.lint.config": [
+    //     "--config",
+    //     "pyproject.toml"
+    // ]
 }

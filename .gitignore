@@ -16,3 +16,9 @@ google-cloud-cli-linux-x86_64.tar.gz
 # Local environment variables
 .env
 .env.local
+
+# Ruff
+.ruff_cache/
+
+# VSCode
+# .vscode/settings.json
