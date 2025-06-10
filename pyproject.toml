@@ -1,0 +1,73 @@
+[project]
+name = "adk-debugger-hackathon"
+version = "0.1.0"
+description = "An Agent Debugger and Orchestration Visualizer for the Agent Development Kit (ADK) with Google Cloud."
+readme = "README.md"
+requires-python = ">=3.9"
+
+dependencies = [
+    "google-adk>=1.2.1",
+    "google-cloud-aiplatform>=1.59.0", # For Vertex AI Gemini
+    "google-cloud-bigquery>=3.22.0",   # For BigQuery logging
+    "python-dotenv>=1.0.1",            # For loading environment variables
+]
+
+# This is for development dependencies and external tools
+[tool.uv]
+
+[tool.ruff]
+lint.select = [
+    # pycodestyle errors
+    "E",
+    # pycodestyle warnings
+    "W",
+    # Pyflakes
+    "F",
+    # isort 
+    "I",
+    # pep8-naming
+    "N",
+    # flake8-bugbear (common pitfalls)
+    "B",
+    # flake8-comprehensions (list/dict comprehensions)
+    "C",
+    # pyupgrade
+    "UP",
+    # flake8-simplify
+    "SIM",
+]
+
+lint.ignore = [
+    "E501", # Line too long (often handled by formatter like Black)
+    "B008", # Do not perform function calls in argument defaults (can be tricky with ADK if not careful)
+]
+
+# Matches Black's default line length
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "agents",
+] # Tell isort that 'agents' is part of your project
+known-third-party = [
+    "google",
+    "asyncio",
+    "dotenv",
+    "uuid",
+] # Explicitly define common third-party libraries if needed for sorting
+
+# [tool.ruff.lint.flake8-annotations]
+# Allow function annotations that are not yet implemented
+# This can be useful during early development.
+# suppress-none-is-not-type = true # Example of a specific rule setting 
+
+[build-system]
+requires = ["setuptools>=61.0"]         # Standard build system for Python
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = ["ruff>=0.11.13"]
+
+# [tool.uv.sources]
+# google-adk = { git = "https://github.com/google/agent-development-kit.git", rev = "main" }

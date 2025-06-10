@@ -1,0 +1,18 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Google Cloud SDK
+google-cloud-sdk/
+google-cloud-cli-linux-x86_64.tar.gz
+
+# Local environment variables
+.env
+.env.local
