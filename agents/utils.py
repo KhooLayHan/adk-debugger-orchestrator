@@ -3,7 +3,7 @@ import os
 
 import uuid
 from dotenv import load_dotenv
-from google.adk.llms.vertex_ai import VertexAILLM
+from google import genai
 from google.cloud import bigquery
 
 # Load environment variables from .env.local
@@ -49,15 +49,15 @@ async def log_agent_event(
     Logs an event to the BigQuery agent_events table.
 
     Args:
-        event_type (str): Type of the event (e.g., "AGENT_START", "MESSAGE_SENT", "TASK_COMPLETE", "ERROR").
-        agent_id (str): ID of the agent performing/receiving the event.
-        trace_id (str): Unique ID for a multi-agent workflow run.
-        message_summary (str, optional): A short summary of the message content or task. Defaults to None.
-        source_agent_id (str, optional): ID of the sending agents (for message events). Defaults to None.
-        target_agent_id (str, optional): ID of the receiving agents (for message events). Defaults to None.
-        duration_ms (int, optional): Duration of the task in milliseconds. Defaults to None.
-        status (str, optional): Status of an event/task. Defaults to None.
-        details (dict, optional): JSON string for additional event details. Defaults to None.
+        event_type (str): The type of the event (e.g., "AGENT_START", "MESSAGE_SEND", "TASK_COMPLETE", "ERROR").
+        agent_id (str): The unique identifier of the agent logging the event.
+        trace_id (str): A unique ID for the entire multi-agent workflow session.
+        message_summary (str, optional): A brief summary of the event or message. Defaults to None.
+        source_agent_id (str, optional): The ID of the agent that initiated the message/event. Defaults to None.
+        target_agent_id (str, optional): The ID of the agent that is the recipient of the message/event. Defaults to None.
+        duration_ms (int, optional): The duration of an operation in milliseconds. Defaults to None.
+        status (str, optional): The status of a event or task (e.g. "SUCCESS", "FAILURE"). Defaults to None.
+        details (dict, optional): A dictionary of additional structured details for the event. Defaults to None.
     """
 
     event_data = {
@@ -73,7 +73,7 @@ async def log_agent_event(
         "status": status,
         "details": (
             str(details) if details else None
-        ),  # Store dict as string, BigQuery STRING type
+        ),  # Store dict as string for BigQuery STRING type
     }
 
     try:
@@ -89,12 +89,22 @@ async def log_agent_event(
 
 
 # --- LLM Instance Initialization ---
-llm = VertexAILLM(
-    project_id=PROJECT_ID,
-    location=LOCATION,
-    model_name="gemini-2.0-flash",  # Or "gemini-1.5-pro", "gemini-2.0-flash-001", etc.
-)
+# Initialize the GenAI client, specifying Vertex AI usage with project and location
+# This client abstracts the model interaction
+try:
+    # Use Vertex AI specific client initialization
+    genai_client = genai.Client(project=PROJECT_ID, location=LOCATION, vertexai=True)
 
-print(
-    f"Utils loaded. Project: {PROJECT_ID}, Location: {LOCATION}, LLM: {llm.model_name}"
-)
+    # Get the GenerativeModel instance via the client's model attribute
+    llm_model = genai_client.models.get("gemini-2.0-pro")
+
+    print(
+        f"Utils loaded. Project: {PROJECT_ID}, Location: {LOCATION}, LLM: {llm_model.name}"
+    )
+except Exception as e:
+    print(f"Error: Could not initialize google-genai client or model: {e}")
+    print(
+        "Ensure GOOGLE_CLOUD_PROJECT and GOOGLE_CLOUD_LOCATION are correctly set, and that the service account used has 'Vertex AI User' role."
+    )
+
+    llm_model = None  # Set to None so agents will fail gracefully or be handled

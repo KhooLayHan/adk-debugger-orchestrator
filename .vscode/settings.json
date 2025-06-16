@@ -3,6 +3,9 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
+    "python.analysis.extraPaths": [
+        "./google-cloud-sdk/lib/third_party"
+    ],
     // "ruff.lint.config": [
     //     "--config",
     //     "pyproject.toml"
